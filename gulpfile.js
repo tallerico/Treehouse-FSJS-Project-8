@@ -7,13 +7,15 @@ const gulp = require("gulp"),
   sass = require("gulp-sass"),
   maps = require("gulp-sourcemaps"),
   del = require("del"),
-  cleanCSS = require("gulp-clean-css");
+  cleanCSS = require("gulp-clean-css"),
+  imagemin = require("gulp-imagemin"),
+  inject = require("gulp-inject");
 
 gulp.task("concatScripts", () => {
   return gulp
     .src("js/circle/*.js")
     .pipe(maps.init())
-    .pipe(concat("app.js"))
+    .pipe(concat("global.js"))
     .pipe(maps.write())
     .pipe(gulp.dest("js"));
 });
@@ -22,7 +24,7 @@ gulp.task(
   "scripts",
   gulp.series("concatScripts", () => {
     return gulp
-      .src("js/app.js")
+      .src("js/global.js")
       .pipe(uglify())
       .pipe(rename("app.min.js"))
       .pipe(gulp.dest("dist/scripts"));
@@ -49,6 +51,31 @@ gulp.task(
   })
 );
 
-gulp.task("clean", () => {
-  del(["dist", "css", "js/app*.js*"]);
+gulp.task("images", () => {
+  return gulp
+    .src("images/*")
+    .pipe(imagemin())
+    .pipe(gulp.dest("dist/content"));
 });
+
+gulp.task("html", () => {
+  return gulp.src("index.html").pipe(gulp.dest("dist"));
+});
+
+gulp.task("index", () => {
+  const target = gulp.src("dist/index.html");
+  const sources = gulp.src(["scripts/*.min.js", "styles/*.min.css"], {
+    read: false
+  });
+
+  return target.pipe(inject(sources)).pipe(gulp.dest("./dist"));
+});
+
+gulp.task("clean", () => {
+  return del(["dist", "css", "src"]);
+});
+
+gulp.task(
+  "build",
+  gulp.series("clean", "html", "scripts", "styles", "images", "index")
+);
