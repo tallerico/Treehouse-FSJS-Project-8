@@ -1,28 +1,23 @@
 {
-  "name": "treehouse-gulp-course",
+  "name": "treehouse-fsjs-project-8",
   "version": "1.0.0",
-  "description": "Code for my Treehouse Gulp.js course!  June, 2015.",
-  "main": "index.js",
+  "description": "This project shows my understanding of Gulp and how to create a build pipeline",
+  "main": "js/global.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hdngr/treehouse-gulp-course"
+    "url": "git+https://github.com/tallerico/Treehouse-FSJS-Project-8.git"
   },
-  "author": "",
+  "author": "Mike Tallerico",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hdngr/treehouse-gulp-course/issues"
+    "url": "https://github.com/tallerico/Treehouse-FSJS-Project-8/issues"
   },
-  "homepage": "https://github.com/hdngr/treehouse-gulp-course",
+  "homepage": "https://github.com/tallerico/Treehouse-FSJS-Project-8#readme",
   "devDependencies": {
-    "del": "^1.2.0",
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.5.2",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.0.1",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-uglify": "^1.2.0"
+    "gulp": "^4.0.0",
+    "gulp-uglify": "^3.0.1"
   }
 }
