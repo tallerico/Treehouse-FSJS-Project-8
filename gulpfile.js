@@ -10,15 +10,24 @@ const gulp = require("gulp"),
 
 gulp.task("concatScripts", () => {
   return gulp
-    .src(["./js/circle/*.js"])
+    .src("js/circle/*.js")
     .pipe(maps.init())
-    .pipe(concat("global.js"))
+    .pipe(concat("app.js"))
     .pipe(maps.write())
-    .pipe(gulp.dest("dist"));
+    .pipe(gulp.dest("js"));
 });
 
-gulp.task("minify", () => {});
+gulp.task(
+  "scripts",
+  gulp.series("concatScripts", function() {
+    return gulp
+      .src("js/app.js")
+      .pipe(uglify())
+      .pipe(rename("app.min.js"))
+      .pipe(gulp.dest("dist/scripts"));
+  })
+);
 
-gulp.task("clean", function() {
+gulp.task("clean", () => {
   del(["dist", "css/application.css*", "js/app*.js*"]);
 });

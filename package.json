@@ -2,7 +2,7 @@
   "name": "treehouse-fsjs-project-8",
   "version": "1.0.0",
   "description": "This project shows my understanding of Gulp and how to create a build pipeline",
-  "main": "js/global.js",
+  "main": "js/app.js",
   "scripts": {
     "test": "mocha"
   },
