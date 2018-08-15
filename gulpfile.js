@@ -6,7 +6,8 @@ const gulp = require("gulp"),
   rename = require("gulp-rename"),
   sass = require("gulp-sass"),
   maps = require("gulp-sourcemaps"),
-  del = require("del");
+  del = require("del"),
+  cleanCSS = require("gulp-clean-css");
 
 gulp.task("concatScripts", () => {
   return gulp
@@ -19,7 +20,7 @@ gulp.task("concatScripts", () => {
 
 gulp.task(
   "scripts",
-  gulp.series("concatScripts", function() {
+  gulp.series("concatScripts", () => {
     return gulp
       .src("js/app.js")
       .pipe(uglify())
@@ -28,6 +29,26 @@ gulp.task(
   })
 );
 
+gulp.task("compileSass", () => {
+  return gulp
+    .src(["./sass/**/**/*.scss", "./sass/*.scss"])
+    .pipe(maps.init())
+    .pipe(sass().on("error", sass.logError))
+    .pipe(maps.write())
+    .pipe(gulp.dest("./css"));
+});
+
+gulp.task(
+  "styles",
+  gulp.series("compileSass", () => {
+    return gulp
+      .src("css/global.css")
+      .pipe(cleanCSS())
+      .pipe(rename("all.min.css"))
+      .pipe(gulp.dest("dist/styles"));
+  })
+);
+
 gulp.task("clean", () => {
-  del(["dist", "css/application.css*", "js/app*.js*"]);
+  del(["dist", "css", "js/app*.js*"]);
 });
