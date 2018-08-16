@@ -14,25 +14,27 @@ import del from "del";
 
 export const clean = () => del(["css", "dist"]);
 
-function compileSass() {
-  return gulp
-    .src(["./sass/**/**/*.scss", "./sass/*.scss"])
-    .pipe(maps.init())
-    .pipe(sass().on("error", sass.logError))
-    .pipe(maps.write())
-    .pipe(rename("global.css"))
-    .pipe(gulp.dest("css"));
-}
+// function compileSass() {
+//   return gulp
+//     .src("sass/global.scss")
+//     .pipe(maps.init())
+//     .pipe(sass().on("error", sass.logError))
+//     .pipe(maps.write())
+//     .pipe(rename("global.css"))
+//     .pipe(gulp.dest("css"));
+// }
 
-function minifyStyles() {
+export function styles() {
   return gulp
-    .src(["css/global.css"])
-    .pipe(cleanCSS())
+    .src("./sass/global.scss")
     .pipe(rename("all.min.css"))
+    .pipe(maps.init())
+    .pipe(sass({ outputStyle: "compressed" }))
+    .pipe(maps.write())
     .pipe(gulp.dest("dist/styles"));
 }
 
-export const styles = gulp.series(compileSass, minifyStyles);
+// export const styles = gulp.series(compileSass, minifyStyles);
 
 function concatScripts() {
   return gulp
