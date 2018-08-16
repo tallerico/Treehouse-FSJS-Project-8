@@ -8,6 +8,7 @@ import rename from "gulp-rename";
 import cleanCSS from "gulp-clean-css";
 import imagemin from "gulp-imagemin";
 import inject from "gulp-inject";
+import webserver from "gulp-webserver";
 import del from "del";
 
 export const clean = () => del(["css", "dist"]);
@@ -64,11 +65,27 @@ function html() {
 
 function index() {
   const target = gulp.src("dist/index.html");
-  const sources = gulp.src(["**/scripts/*.min.js", "**/styles/*.min.css"], {
-    read: false
-  });
 
-  return target.pipe(inject(sources)).pipe(gulp.dest("dist"));
+  return target
+    .pipe(
+      inject(
+        gulp.src(["**/scripts/*.min.js", "**/styles/*.min.css"], {
+          read: false
+        }),
+        { relative: true }
+      )
+    )
+    .pipe(gulp.dest("dist"));
+}
+
+function liveReload() {
+  gulp.src("dist").pipe(
+    webserver({
+      livereload: true,
+      directoryListing: false,
+      open: true
+    })
+  );
 }
 
 function watch() {
@@ -81,7 +98,7 @@ export const build = gulp.series(
   gulp.parallel(styles, scripts),
   images,
   index,
-  watch
+  gulp.parallel(liveReload, watch)
 );
 
 export default build;
