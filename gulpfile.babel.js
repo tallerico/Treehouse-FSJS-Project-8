@@ -8,7 +8,8 @@ import rename from "gulp-rename";
 import cleanCSS from "gulp-clean-css";
 import imagemin from "gulp-imagemin";
 import inject from "gulp-inject";
-import webserver from "gulp-webserver";
+import connect from "gulp-connect";
+import opn from "opn";
 import del from "del";
 
 export const clean = () => del(["css", "dist"]);
@@ -78,27 +79,25 @@ function index() {
     .pipe(gulp.dest("dist"));
 }
 
-function liveReload() {
-  gulp.src("dist").pipe(
-    webserver({
-      livereload: true,
-      directoryListing: false,
-      open: true
-    })
-  );
+function server() {
+  connect.server({
+    root: "dist",
+    livereload: true
+  });
+  opn(`http://localhost:8080/`);
 }
 
+const liveReload = () => gulp.src("./").pipe(connect.reload());
+
 function watch() {
-  gulp.watch("sass/circle/**/*.scss", styles);
+  gulp.watch(["sass/circle/**/*", "sass/*"], gulp.series(styles, liveReload));
 }
 
 export const build = gulp.series(
   clean,
-  html,
-  gulp.parallel(styles, scripts),
-  images,
+  gulp.parallel(styles, scripts, html, images),
   index,
-  gulp.parallel(liveReload, watch)
+  gulp.parallel(server, watch)
 );
 
 export default build;
