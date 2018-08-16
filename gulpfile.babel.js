@@ -14,16 +14,7 @@ import del from "del";
 
 export const clean = () => del(["css", "dist"]);
 
-// function compileSass() {
-//   return gulp
-//     .src("sass/global.scss")
-//     .pipe(maps.init())
-//     .pipe(sass().on("error", sass.logError))
-//     .pipe(maps.write())
-//     .pipe(rename("global.css"))
-//     .pipe(gulp.dest("css"));
-// }
-
+//compiles and minifies sass files
 export function styles() {
   return gulp
     .src("./sass/global.scss")
@@ -34,27 +25,18 @@ export function styles() {
     .pipe(gulp.dest("dist/styles"));
 }
 
-// export const styles = gulp.series(compileSass, minifyStyles);
-
-function concatScripts() {
+//compiles and minifies js files
+export function scripts() {
   return gulp
-    .src("js/circle/*.js")
+    .src(["js/*.js", "js/circle/*.js"])
     .pipe(maps.init())
-    .pipe(concat("global.js"))
-    .pipe(maps.write())
-    .pipe(gulp.dest("js"));
-}
-
-function minifyScripts() {
-  return gulp
-    .src("js/global.js")
+    .pipe(concat("app.min.js"))
     .pipe(uglify())
-    .pipe(rename("app.min.js"))
+    .pipe(maps.write())
     .pipe(gulp.dest("dist/scripts"));
 }
 
-export const scripts = gulp.series(concatScripts, minifyScripts);
-
+//compresses images
 function images() {
   return gulp
     .src("images/*")
@@ -62,13 +44,14 @@ function images() {
     .pipe(gulp.dest("dist/content"));
 }
 
+//copies HTML to dist folder
 function html() {
   return gulp.src("index.html").pipe(gulp.dest("dist"));
 }
 
+//injects paths to scripts and stylsheets to HTML head
 function index() {
   const target = gulp.src("dist/index.html");
-
   return target
     .pipe(
       inject(
@@ -81,20 +64,25 @@ function index() {
     .pipe(gulp.dest("dist"));
 }
 
+//launches a live server on port 3000
 function server() {
   connect.server({
     root: "dist",
-    livereload: true
+    livereload: true,
+    port: 3000
   });
-  opn(`http://localhost:8080/`);
+  opn(`http://localhost:3000/`);
 }
 
+//allows for live reload on any changes
 const liveReload = () => gulp.src("./").pipe(connect.reload());
 
+//watches for changes to sass files
 function watch() {
   gulp.watch(["sass/circle/**/*", "sass/*"], gulp.series(styles, liveReload));
 }
 
+//allows for gulp build to run all task
 export const build = gulp.series(
   clean,
   gulp.parallel(styles, scripts, html, images),
@@ -102,4 +90,5 @@ export const build = gulp.series(
   gulp.parallel(server, watch)
 );
 
+//sets gulp to default build command
 export default build;
